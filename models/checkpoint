@@ -1,0 +1,3 @@
+model_checkpoint_path: "pong.ckpt-16750"
+all_model_checkpoint_paths: "pong.ckpt-16700"
+all_model_checkpoint_paths: "pong.ckpt-16750"

@@ -1,13 +1,23 @@
 import numpy as np
 import gym
 import tensorflow as tf
-from util import discount_rewards, prepro
+
+def discount_rewards(rewards, gamma):
+    return np.array([sum([gamma**t*r for t, r in enumerate(rewards[i:])]) for i in range(len(rewards))])
+
+def prepro(I):
+    I = I[35:195] # crop
+    I = I[::2,::2,0] # downsample by factor of 2
+    I[I == 144] = 0  # erase background (background type 1)
+    I[I == 109] = 0  # erase background (background type 2)
+    I[I != 0] = 1    # everything else (paddles, ball) just set to 1
+    return I.astype(np.float).ravel()
 
 n_features = 80 * 80  # after preprocessing, input is a 1d 6400 dim vector
 n_hidden = 200
 n_actions = 3  # ['NOOP', 'FIRE', 'RIGHT', 'LEFT', 'RIGHTFIRE', 'LEFTFIRE']
 learning_rate = 1e-3
-gamma = 0.99  # how much do final rewards propagate backwards?
+gamma = 0.99  # how much does reward propagae backwards
 
 tf.reset_default_graph()
 
@@ -69,6 +79,10 @@ with tf.Session() as sess:
         
         s2, r, d, _ = env.step(a + 1)  # ['NOOP', 'FIRE', 'RIGHT', 'LEFT', 'RIGHTFIRE', 'LEFTFIRE']
         s1 = s2
+
+        # lets ramp up positive rewards for a big gradient boost
+        # if r > 0:
+            # r = 100
 
         # record game history
         xs.append(x)
