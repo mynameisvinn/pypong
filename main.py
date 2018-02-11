@@ -73,8 +73,9 @@ with tf.Session() as sess:
             # save model
             if episode % 1 == 0:
                 print ('ep {}: reward: {}'.format(episode, total_r_per_episode))
-            if episode % 5 == 0:    
-                pong_model.saver.save(sess, save_path, global_step=episode, max_to_keep=2)
+            if episode % 1 == 0:
+                save_path = 'models/pong.ckpt'
+                pong_model.saver.save(sess, save_path, global_step=episode)
                 print("saved model #{}".format(episode))
                 
             # bookkeeping

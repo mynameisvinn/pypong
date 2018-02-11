@@ -29,4 +29,4 @@ class Model():
         self.op = tf.train.AdamOptimizer(lr).minimize(self.loss)
 
     def init_saver(self):
-        self.saver = tf.train.Saver()
+        self.saver = tf.train.Saver(max_to_keep=2)
