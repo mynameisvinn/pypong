@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-class Model():
+class Model(object):
     def __init__(self):
         self.build_model()
         self.init_saver()

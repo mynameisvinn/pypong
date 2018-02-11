@@ -1,3 +1,2 @@
 model_checkpoint_path: "pong.ckpt-22081"
-all_model_checkpoint_paths: "pong.ckpt-22080"
 all_model_checkpoint_paths: "pong.ckpt-22081"
