@@ -4,15 +4,11 @@ import tensorflow as tf
 from utils import discount_rewards, prepro
 
 
-n_features = 80 * 80  # after preprocessing, input is a 1d 6400 dim vector
-n_hidden = 200
-n_actions = 3  # ['NOOP', 'FIRE', 'RIGHT', 'LEFT', 'RIGHTFIRE', 'LEFTFIRE']
-learning_rate = 1e-3
-gamma = 0.99  # how much does reward propagae backwards
-
 class Trainer(object):
 
-    def __init__(self, sess, pong_model, env):
+    def __init__(self, sess, pong_model, env, config):
+        self.config = config
+
         sess.run(tf.global_variables_initializer())
 
         episode = 0
@@ -27,7 +23,7 @@ class Trainer(object):
         else:
             print("loaded model: {}".format(load_path))
             episode = int(load_path.split('-')[-1])
-        
+
         s1 = env.reset()
         prev_x = None
         xs = []
@@ -38,12 +34,12 @@ class Trainer(object):
         while True:
             env.render()
             cur_x = prepro(s1)
-            x = cur_x - prev_x if prev_x is not None else np.zeros(n_features)
+            x = cur_x - prev_x if prev_x is not None else np.zeros(self.config.n_features)
             prev_x = cur_x
 
             aprob = sess.run(pong_model.prob, feed_dict={pong_model.X_: np.reshape(x, (1,-1))})[0]
-            a = np.random.choice(n_actions, p=aprob)
-            a1e = np.eye(n_actions)[a]
+            a = np.random.choice(self.config.n_actions, p=aprob)
+            a1e = np.eye(self.config.n_actions)[a]  # 1-hot encoding
             
             s2, r, d, _ = env.step(a + 1)  # ['NOOP', 'FIRE', 'RIGHT', 'LEFT', 'RIGHTFIRE', 'LEFTFIRE']
             s1 = s2
@@ -57,7 +53,7 @@ class Trainer(object):
             # done is true when player gets 21 points
             if d:
                 
-                epr = np.vstack(discount_rewards(rs, gamma))
+                epr = np.vstack(discount_rewards(rs, self.config.gamma))
                 eps = np.vstack(xs)
                 epl = np.vstack(ys)
 

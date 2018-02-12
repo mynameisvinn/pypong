@@ -1,0 +1,7 @@
+{
+    "n_features": 6400,
+    "n_hidden": 200,
+    "n_actions": 3,
+    "lr": 1e-3,
+    "gamma": 0.99
+}
